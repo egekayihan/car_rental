@@ -4,11 +4,74 @@ import java.util.Scanner;
 public class MyCon {
     static Statement stmnt = makeConnection();
     static ResultSet resultSet = null;
+    static Scanner sc = new Scanner(System.in);
 
     public static void main(String[] args) throws SQLException {
-        Scanner sc = new Scanner(System.in);
         int input = 0;
 
+        while (true) {
+            System.out.println();
+            System.out.println("1. Insert");
+            System.out.println("2. View");
+            System.out.print("Which functıon would you like to run (0. Exit): ");
+            input = sc.nextInt();
+
+            if (input == 1) {
+                getInserts();
+            } else if (input == 2) {
+                getTables();
+            } else if (input == 0) {
+                System.out.println("Have a nice Day");
+                break;
+            }
+        }
+
+    }
+
+    public static void getInserts() throws SQLException {
+        int input = 0;
+        while (true) {
+            System.out.println();
+            System.out.println("1. Client");
+            System.out.println("2. Invoices");
+            System.out.print("Which table would you like to insert (0. Exit): ");
+            input = sc.nextInt();
+
+            if (input == 1) {
+                insertClient();
+                System.out.println();
+            } else if (input == 2) {
+                insertInvoice();
+                System.out.println();
+            } else if (input == 0) {
+                return;
+            }
+        }
+    }
+
+    public static void insertClient() throws SQLException {
+        System.out.print("Personal Number: ");
+        String personalNumber = sc.next();
+
+        System.out.print("First Name: ");
+        String firstName = sc.next();
+
+        System.out.print("Last Name: ");
+        String lastName = sc.next();
+
+        System.out.print("Address: ");
+        String address = sc.next();
+        resultSet = stmnt.executeQuery("INSERT INTO client (personal_number, firstname, lastname, address) VALUES ("+ personalNumber + "," + firstName + "," + lastName + "," + address + ")");
+
+        getClients();
+    }
+
+    public static void insertInvoice(){
+
+    }
+
+    public static void getTables() throws SQLException {
+        int input = 0;
         while (true) {
             System.out.println("1. Shops");
             System.out.println("2. Cars");
@@ -34,8 +97,7 @@ public class MyCon {
                 getInvoices();
                 System.out.println();
             } else if (input == 0) {
-                System.out.println("Have a nice Day");
-                break;
+                return;
             }
         }
     }
