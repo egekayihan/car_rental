@@ -2,7 +2,8 @@ import java.sql.*;
 import java.util.Scanner;
 
 public class MyCon {
-    static Statement stmnt = makeConnection();
+    static Connection connection = createConnection();
+    static Statement stmnt = createStatement();
     static ResultSet resultSet = null;
     static Scanner sc = new Scanner(System.in);
 
@@ -51,7 +52,7 @@ public class MyCon {
 
     public static void insertClient() throws SQLException {
         System.out.print("Personal Number: ");
-        String personalNumber = sc.next();
+        int personalNumber = sc.nextInt();
 
         System.out.print("First Name: ");
         String firstName = sc.next();
@@ -61,7 +62,16 @@ public class MyCon {
 
         System.out.print("Address: ");
         String address = sc.next();
-        resultSet = stmnt.executeQuery("INSERT INTO client (personal_number, firstname, lastname, address) VALUES ("+ personalNumber + "," + firstName + "," + lastName + "," + address + ")");
+
+        String query = "INSERT INTO client (personal_number, firstname, lastname, address) VALUES (?, ?, ?, ?)";
+
+        PreparedStatement preparedStatement = connection.prepareStatement(query);
+        preparedStatement.setInt(1, personalNumber);
+        preparedStatement.setString(2, firstName);
+        preparedStatement.setString(3, lastName);
+        preparedStatement.setString(4, address);
+
+        preparedStatement.execute();
 
         getClients();
     }
@@ -102,13 +112,22 @@ public class MyCon {
         }
     }
 
-    public static Statement makeConnection(){
+    public static Connection createConnection(){
+        Connection con = null;
         try{
             Class.forName("com.mysql.cj.jdbc.Driver");
-            Connection con = DriverManager.getConnection(
-                    "jdbc:mysql://localhost:3307/car_rental", "root", "root");
+            con = DriverManager.getConnection(
+                    "jdbc:mysql://localhost:3306/car_rental", "root", "root");
 
-            stmnt = con.createStatement();
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+            return con;
+    }
+
+    public static Statement createStatement(){
+        try{
+            stmnt = connection.createStatement();
         } catch(Exception ex) {
             System.out.println("Exception");
         }
