@@ -76,8 +76,40 @@ public class MyCon {
         getClients();
     }
 
-    public static void insertInvoice(){
+    public static void insertInvoice() throws SQLException {
+        System.out.print("Starting Date (YYYY-MM-DD): ");
+        String startDateS = sc.next();
+        Date startDateD = Date.valueOf(startDateS);
 
+        System.out.print("Ending Date (YYYY-MM-DD): ");
+        String endDateS = sc.next();
+        Date endDateD = Date.valueOf(endDateS);
+
+        System.out.print("Cost: ");
+        int cost = sc.nextInt();
+
+        System.out.print("Client Personal Number: ");
+        int clPersNum = sc.nextInt();
+
+        System.out.print("Employee ID: ");
+        int emId = sc.nextInt();
+
+        System.out.print("Car ID: ");
+        int caId = sc.nextInt();
+
+        String query = "INSERT INTO invoice (starting_date, ending_date, cost, cl_personal_number, emp_id, car_id) VALUES (?, ?, ?, ?, ?, ?)";
+
+        PreparedStatement preparedStatement = connection.prepareStatement(query);
+        preparedStatement.setDate(1, startDateD);
+        preparedStatement.setDate(2, endDateD);
+        preparedStatement.setInt(3, cost);
+        preparedStatement.setInt(4, clPersNum);
+        preparedStatement.setInt(5, emId);
+        preparedStatement.setInt(6, caId);
+
+        preparedStatement.execute();
+
+        getInvoices();
     }
 
     public static void getTables() throws SQLException {
@@ -117,7 +149,7 @@ public class MyCon {
         try{
             Class.forName("com.mysql.cj.jdbc.Driver");
             con = DriverManager.getConnection(
-                    "jdbc:mysql://localhost:3306/car_rental", "root", "root");
+                    "jdbc:mysql://localhost:3307/car_rental", "root", "root");
 
         } catch(Exception e) {
             e.printStackTrace();
