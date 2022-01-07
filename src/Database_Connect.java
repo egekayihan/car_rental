@@ -5,7 +5,7 @@ public class Database_Connect {
     public static void main(String[] args) {
         String connectionUrl =
                 "jdbc:sqlserver://yourserver.database.windows.net:1433;"
-                        + "database=AdventureWorks;"
+                        + "database=car_rental;"
                         + "user=yourusername@yourserver;"
                         + "password=yourpassword;"
                         + "encrypt=true;"
