@@ -6,15 +6,18 @@ public class MyCon {
     static Statement stmnt = createStatement();
     static ResultSet resultSet = null;
     static Scanner sc = new Scanner(System.in);
+    static final int portAddress = 3306;
 
     public static void main(String[] args) throws SQLException {
+
         int input = 0;
 
         while (true) {
+
             System.out.println();
             System.out.println("1. Insert");
             System.out.println("2. View");
-            System.out.print("Which functıon would you like to run (0. Exit): ");
+            System.out.print("Which function would you like to run (0. Exit): ");
             input = sc.nextInt();
 
             if (input == 1) {
@@ -85,9 +88,6 @@ public class MyCon {
         String endDateS = sc.next();
         Date endDateD = Date.valueOf(endDateS);
 
-        System.out.print("Cost: ");
-        int cost = sc.nextInt();
-
         System.out.print("Client Personal Number: ");
         int clPersNum = sc.nextInt();
 
@@ -97,9 +97,20 @@ public class MyCon {
         System.out.print("Car ID: ");
         int caId = sc.nextInt();
 
+        String queryOfCarFee = "select fee from car where id=?";
+
+        PreparedStatement preparedStatement = connection.prepareStatement(queryOfCarFee);
+        preparedStatement.setInt(1, caId);
+        resultSet = preparedStatement.executeQuery();
+
+        int cost = 0;
+        if (resultSet.next())
+            cost = resultSet.getInt(1);
+
+
         String query = "INSERT INTO invoice (starting_date, ending_date, cost, cl_personal_number, emp_id, car_id) VALUES (?, ?, ?, ?, ?, ?)";
 
-        PreparedStatement preparedStatement = connection.prepareStatement(query);
+        preparedStatement = connection.prepareStatement(query);
         preparedStatement.setDate(1, startDateD);
         preparedStatement.setDate(2, endDateD);
         preparedStatement.setInt(3, cost);
@@ -148,8 +159,8 @@ public class MyCon {
         Connection con = null;
         try{
             Class.forName("com.mysql.cj.jdbc.Driver");
-            con = DriverManager.getConnection(
-                    "jdbc:mysql://localhost:3307/car_rental", "root", "root");
+            String url = "jdbc:mysql://localhost:" + portAddress + "/car_rental";
+            con = DriverManager.getConnection(url, "root", "root");
 
         } catch(Exception e) {
             e.printStackTrace();
