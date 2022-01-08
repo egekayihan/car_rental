@@ -1,11 +1,13 @@
 import java.sql.*;
 import java.util.Scanner;
+import java.util.concurrent.TimeUnit;
 
 public class MyCon {
     static Connection connection = createConnection();
     static Statement stmnt = createStatement();
     static ResultSet resultSet = null;
     static Scanner sc = new Scanner(System.in);
+    static PreparedStatement preparedStatement;
     static final int portAddress = 3306;
 
     public static void main(String[] args) throws SQLException {
@@ -97,16 +99,7 @@ public class MyCon {
         System.out.print("Car ID: ");
         int caId = sc.nextInt();
 
-        String queryOfCarFee = "select fee from car where id=?";
-
-        PreparedStatement preparedStatement = connection.prepareStatement(queryOfCarFee);
-        preparedStatement.setInt(1, caId);
-        resultSet = preparedStatement.executeQuery();
-
-        int cost = 0;
-        if (resultSet.next())
-            cost = resultSet.getInt(1);
-
+        int cost = getCarFee(caId) * calculateRentingPeriod(startDateD, endDateD);
 
         String query = "INSERT INTO invoice (starting_date, ending_date, cost, cl_personal_number, emp_id, car_id) VALUES (?, ?, ?, ?, ?, ?)";
 
@@ -121,6 +114,31 @@ public class MyCon {
         preparedStatement.execute();
 
         getInvoices();
+    }
+
+    public static int calculateRentingPeriod(Date start, Date end){
+        long delta = end.getTime() - start.getTime();
+        TimeUnit time = TimeUnit.DAYS;
+
+        return (int) (time.convert(delta, TimeUnit.MILLISECONDS) + 1);
+    }
+
+    public static int getCarFee(int carID){
+        String queryOfCarFee = "SELECT fee FROM car WHERE id=?";
+        int cost = 0;
+
+        try {
+            preparedStatement = connection.prepareStatement(queryOfCarFee);
+            preparedStatement.setInt(1, carID);
+            resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next())
+                cost = resultSet.getInt(1);
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+
+        return cost;
     }
 
     public static void getTables() throws SQLException {
@@ -213,10 +231,10 @@ public class MyCon {
             System.out.println("ID: " + resultSet.getInt(1) + "    Starting Date:  " +
                     resultSet.getString(2) + "    Ending Date: " +
                     resultSet.getString(3) + "    Cost: " +
-                    resultSet.getString(3) + "    Client Personal Number: " +
-                    resultSet.getString(3) + "    Employee ID: " +
-                    resultSet.getString(3) + "    Car ID: " +
-                    resultSet.getString(3));
+                    resultSet.getString(4) + "    Client Personal Number: " +
+                    resultSet.getString(5) + "    Employee ID: " +
+                    resultSet.getString(6) + "    Car ID: " +
+                    resultSet.getString(7));
         }
     }
 
