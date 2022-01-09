@@ -90,6 +90,13 @@ public class MyCon {
         String endDateS = sc.next();
         Date endDateD = Date.valueOf(endDateS);
 
+        while (endDateD.compareTo(startDateD) < 0){
+            System.out.println("Ending Date can't be earlier than Starting Date");
+            System.out.print("Ending Date (YYYY-MM-DD): ");
+            endDateS = sc.next();
+            endDateD = Date.valueOf(endDateS);
+        }
+
         System.out.print("Client Personal Number: ");
         int clPersNum = sc.nextInt();
 
