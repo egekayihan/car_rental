@@ -1,4 +1,5 @@
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 
@@ -8,15 +9,17 @@ public class MyCon {
     static ResultSet resultSet = null;
     static Scanner sc = new Scanner(System.in);
     static PreparedStatement preparedStatement;
-    static final int portAddress = 3306;
+    static final int portAddress = 3307;
+    static int employeeShopID = 0;
+    static ArrayList<Integer> availableCarsArr = new ArrayList<Integer>();
 
     public static void main(String[] args) throws SQLException {
-
         int input = 0;
 
-        while (true) {
+        employeeLogin();
 
-            System.out.println();
+        while (true) {
+            System.out.println("------------------------------------------------------");
             System.out.println("1. Insert");
             System.out.println("2. View");
             System.out.print("Which function would you like to run (0. Exit): ");
@@ -34,10 +37,120 @@ public class MyCon {
 
     }
 
+    public static void employeeLogin() throws SQLException {
+        System.out.print("Employee ID: ");
+        int id = sc.nextInt();
+
+        String query = "select shop_id from employee where employee.id = ?";
+        preparedStatement = connection.prepareStatement(query);
+        preparedStatement.setInt(1, id);
+
+        resultSet = preparedStatement.executeQuery();
+
+        if(resultSet.next())
+            employeeShopID = resultSet.getInt(1);
+    }
+
+    public static void getAvailableCars() throws SQLException {
+        System.out.print("Starting Date (YYYY-MM-DD): ");
+        String startDateS = sc.next();
+        Date startDateD = Date.valueOf(startDateS);
+
+        System.out.print("Ending Date (YYYY-MM-DD): ");
+        String endDateS = sc.next();
+        Date endDateD = Date.valueOf(endDateS);
+
+        String query = "SELECT invoice.car_id FROM invoice " +
+                "WHERE NOT(ending_date < ? OR starting_date > ?) ";
+
+        preparedStatement = connection.prepareStatement(query);
+        preparedStatement.setDate(1, startDateD);
+        preparedStatement.setDate(2, endDateD);
+
+        resultSet = preparedStatement.executeQuery();
+        System.out.println();
+
+        while (resultSet.next()){
+            System.out.println("Available Car IDs: " + resultSet.getInt(1));
+        }
+    }
+
+    public static void getCarsInShop() throws SQLException {
+        availableCarsArr = new ArrayList<Integer>();
+        System.out.print("Starting Date (YYYY-MM-DD): ");
+        String startDateS = sc.next();
+        Date startDateD = Date.valueOf(startDateS);
+
+        System.out.print("Ending Date (YYYY-MM-DD): ");
+        String endDateS = sc.next();
+        Date endDateD = Date.valueOf(endDateS);
+
+        String query = "SELECT invoice.car_id FROM invoice " +
+                "WHERE NOT(ending_date < ? OR starting_date > ?) ";
+
+        preparedStatement = connection.prepareStatement(query);
+        preparedStatement.setDate(1, startDateD);
+        preparedStatement.setDate(2, endDateD);
+
+        resultSet = preparedStatement.executeQuery();
+
+        while (resultSet.next())
+            availableCarsArr.add(resultSet.getInt(1));
+
+
+        String query2 = "SELECT brand, model, production_year, fee FROM car " +
+                "WHERE shop_id = ?";
+
+        for(int i = 0; i < availableCarsArr.size(); i++)
+            query2 = query2 + " AND id != ?";
+
+        preparedStatement = connection.prepareStatement(query2);
+        preparedStatement.setInt(1, employeeShopID);
+
+        for(int i = 0; i < availableCarsArr.size(); i++)
+            preparedStatement.setInt(i + 2, availableCarsArr.get(i));
+
+        resultSet = preparedStatement.executeQuery();
+        System.out.println();
+
+        while (resultSet.next()){
+            System.out.println("Car Brand: " + resultSet.getString(1) + "    Car Model: " +
+                    resultSet.getString(2) + "    Production Year: " +
+                    resultSet.getString(3) + "    Fee: " +
+                    resultSet.getString(4));
+        }
+    }
+
+    public static void getPrevInvoices() throws SQLException {
+        System.out.print("Personal Number: ");
+        int personalNumber = sc.nextInt();
+
+        String query = "SELECT firstname, lastname, car.brand, car.model, starting_date, ending_date " +
+                "FROM client " +
+                "JOIN invoice ON invoice.cl_personal_number = client.personal_number " +
+                "JOIN car ON car.id = invoice.car_id " +
+                "WHERE client.personal_number = ?;";
+
+        preparedStatement = connection.prepareStatement(query);
+        preparedStatement.setInt(1, personalNumber);
+
+        resultSet = preparedStatement.executeQuery();
+        System.out.println();
+
+        while (resultSet.next()){
+            System.out.println("First Name: " + resultSet.getString(1) + "    Last Name: " +
+                    resultSet.getString(2) + "    Car Brand: " +
+                    resultSet.getString(3) + "    Car Model: " +
+                    resultSet.getString(4) + "    Starting Date: " +
+                    resultSet.getDate(5) + "    Ending Date: " +
+                    resultSet.getDate(6));
+        }
+    }
+
     public static void getInserts() throws SQLException {
         int input = 0;
         while (true) {
-            System.out.println();
+            System.out.println("------------------------------------------------------");
             System.out.println("1. Client");
             System.out.println("2. Invoices");
             System.out.print("Which table would you like to insert (0. Exit): ");
@@ -151,11 +264,16 @@ public class MyCon {
     public static void getTables() throws SQLException {
         int input = 0;
         while (true) {
+            System.out.println("------------------------------------------------------");
             System.out.println("1. Shops");
             System.out.println("2. Cars");
             System.out.println("3. Clients");
             System.out.println("4. Employees");
             System.out.println("5. Invoices");
+            System.out.println();
+            System.out.println("6. Get Previous Invoices of a Person");
+            System.out.println("7. Get Available Cars in a Certain Period");
+            System.out.println("8. Get Available Cars in a Certain Shop");
             System.out.print("Which table would you like to view (0. Exit): ");
             input = sc.nextInt();
 
@@ -174,7 +292,16 @@ public class MyCon {
             } else if (input == 5) {
                 getInvoices();
                 System.out.println();
-            } else if (input == 0) {
+            } else if (input == 6) {
+                getPrevInvoices();
+                System.out.println();
+            }else if (input == 7) {
+                getAvailableCars();
+                System.out.println();
+            }else if (input == 8) {
+                getCarsInShop();
+                System.out.println();
+            }else if (input == 0) {
                 return;
             }
         }
@@ -190,7 +317,7 @@ public class MyCon {
         } catch(Exception e) {
             e.printStackTrace();
         }
-            return con;
+        return con;
     }
 
     public static Statement createStatement(){
