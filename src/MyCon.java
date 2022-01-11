@@ -37,6 +37,77 @@ public class MyCon {
 
     }
 
+    public static void getCarsInACity() throws SQLException {
+        int i = 1;
+        String city = "";
+        int input = 0;
+        ArrayList<String> arr = new ArrayList<String>();
+        resultSet = stmnt.executeQuery("select city from shop");
+
+        while (resultSet.next()){
+            System.out.println(i + ". "+ resultSet.getString(1));
+            arr.add(resultSet.getString(1));
+            i++;
+        }
+
+        while(true) {
+            System.out.print("Choose a city: ");
+            input = sc.nextInt();
+
+            if (input > 0 && input <= arr.size()) {
+                city = arr.get(input - 1);
+                break;
+            }
+            else
+                System.out.println("Invalid Input");
+        }
+
+        String query = "SELECT car.brand, car.model, COUNT(invoice.car_id) " +
+                "FROM car " +
+                "JOIN invoice ON invoice.car_id = car.id " +
+                "JOIN shop ON shop.id = shop_id " +
+                "WHERE shop.city = ? " +
+                "GROUP BY invoice.car_id " +
+                "ORDER BY COUNT(invoice.car_id) DESC";
+
+        preparedStatement = connection.prepareStatement(query);
+        preparedStatement.setString(1, city);
+
+        resultSet = preparedStatement.executeQuery();
+        System.out.println();
+
+        while (resultSet.next()){
+            System.out.println("Car Brand: " + resultSet.getString(1)
+                    + "    Car Model: " + resultSet.getString(2)
+                    + "    Number of Rents: " + resultSet.getInt(3));
+        }
+    }
+
+    public static void getEmployeesPerformance() throws SQLException {
+        System.out.print("Shop ID: ");
+        int shopID = sc.nextInt();
+
+        String query = "SELECT employee.firstname, employee.lastname, COUNT(invoice.emp_id), SUM(invoice.cost) " +
+                "FROM employee " +
+                "JOIN invoice ON invoice.emp_id = employee.id " +
+                "WHERE employee.shop_id = ? " +
+                "GROUP BY invoice.emp_id " +
+                "ORDER BY SUM(invoice.cost) DESC";
+
+        preparedStatement = connection.prepareStatement(query);
+        preparedStatement.setInt(1, shopID);
+
+        resultSet = preparedStatement.executeQuery();
+        System.out.println();
+
+        while (resultSet.next()){
+            System.out.println("First Name: " + resultSet.getString(1)
+                    + "    Last Name: " + resultSet.getString(2)
+                    + "    Number of Cars Rented: " + resultSet.getString(3)
+                    + "    Total Earning: " + resultSet.getString(4));
+        }
+    }
+
     public static void employeeLogin() throws SQLException {
         System.out.print("Employee ID: ");
         int id = sc.nextInt();
@@ -274,6 +345,8 @@ public class MyCon {
             System.out.println("6. Get Previous Invoices of a Person");
             System.out.println("7. Get Available Cars in a Certain Period");
             System.out.println("8. Get Available Cars in a Certain Shop");
+            System.out.println("9. Get Employee Performances in a Shop");
+            System.out.println("10. Get Cars in a City");
             System.out.print("Which table would you like to view (0. Exit): ");
             input = sc.nextInt();
 
@@ -300,6 +373,12 @@ public class MyCon {
                 System.out.println();
             }else if (input == 8) {
                 getCarsInShop();
+                System.out.println();
+            }else if (input == 9) {
+                getEmployeesPerformance();
+                System.out.println();
+            }else if (input == 10) {
+                getCarsInACity();
                 System.out.println();
             }else if (input == 0) {
                 return;
