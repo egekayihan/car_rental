@@ -335,7 +335,7 @@ public class MyCon {
     public static void getTables() throws SQLException {
         int input = 0;
         while (true) {
-            System.out.println("------------------------------------------------------");
+            System.out.println();
             System.out.println("1. Shops");
             System.out.println("2. Cars");
             System.out.println("3. Clients");
@@ -412,69 +412,118 @@ public class MyCon {
         resultSet = stmnt.executeQuery("select * from shop");
         System.out.println();
         System.out.println("SHOPS");
+        System.out.println();
+        System.out.format("%15s%18s%24s", "ID", "City", "Address");
+        System.out.println();
+        System.out.println("------------------------------------------------------------------");
 
         while (resultSet.next()){
-            System.out.println("ID: " + resultSet.getInt(1) + "    City: " +
-                    resultSet.getString(2) + "    Address: " +
+            System.out.format("%15s%18s%25s", resultSet.getInt(1), resultSet.getString(2),
                     resultSet.getString(3));
+            System.out.println();
+            /*System.out.println("ID: " + resultSet.getInt(1) + "    City: " +
+                    resultSet.getString(2) + "    Address: " +
+                    resultSet.getString(3));*/
         }
+        System.out.println("------------------------------------------------------------------");
     }
 
     public static void getCars() throws SQLException {
         resultSet = stmnt.executeQuery("select * from car");
         System.out.println();
         System.out.println("CARS");
+        System.out.println();
+        System.out.format("%15s%16s%20s%22s%18s%21s", "ID", "Brand", "Model", "Production Year", "Fee", "Shop ID");
+        System.out.println();
+        System.out.println("------------------------------------------------------------------------------------------------------------------");
 
         while (resultSet.next()){
-            System.out.println("ID: " + resultSet.getInt(1) + "    Brand: " +
+            System.out.format("%15s%18s%18s%20s%20s%19s", resultSet.getInt(1), resultSet.getString(2),
+                    resultSet.getString(3), resultSet.getString(4), resultSet.getString(5),
+                    resultSet.getString(6));
+            System.out.println();
+            /*System.out.println("ID: " + resultSet.getInt(1) + "    Brand: " +
                     resultSet.getString(2) + "    Model: " +
                     resultSet.getString(3) + "    Production year: " +
                     resultSet.getString(4) + "    Fee: " +
                     resultSet.getString(5) + "    Shop ID: " +
-                    resultSet.getString(6));
+                    resultSet.getString(6));*/
         }
+        System.out.println("------------------------------------------------------------------------------------------------------------------");
     }
 
     public static void getInvoices() throws SQLException {
         resultSet = stmnt.executeQuery("select * from invoice");
         System.out.println();
         System.out.println("INVOICES");
+        System.out.println();
+
+        System.out.format("%15s%16s%18s%10s%28s%16s%16s", "ID", "Starting Date", "Ending Date", "Cost", "Client Personal Number",
+                "Employee ID", "Car ID");
+        System.out.println();
+        System.out.println("---------------------------------------------------------------------------------------------------------------" +
+                "--------------------");
 
         while (resultSet.next()){
-            System.out.println("ID: " + resultSet.getInt(1) + "    Starting Date:  " +
+            System.out.format("%15s%16s%18s%10s%20s%19s%18s", resultSet.getInt(1), resultSet.getString(2),
+                    resultSet.getString(3), resultSet.getString(4), resultSet.getString(5),
+                    resultSet.getString(6), resultSet.getString(7));
+            System.out.println();
+            /*System.out.println("ID: " + resultSet.getInt(1) + "    Starting Date:  " +
                     resultSet.getString(2) + "    Ending Date: " +
                     resultSet.getString(3) + "    Cost: " +
                     resultSet.getString(4) + "    Client Personal Number: " +
                     resultSet.getString(5) + "    Employee ID: " +
                     resultSet.getString(6) + "    Car ID: " +
-                    resultSet.getString(7));
+                    resultSet.getString(7));*/
         }
+        System.out.println("---------------------------------------------------------------------------------------------------------------" +
+                "--------------------");
     }
 
     public static void getClients() throws SQLException {
         resultSet = stmnt.executeQuery("select * from client");
         System.out.println();
         System.out.println("CLIENTS");
+        System.out.println();
+
+        System.out.format("%20s%16s%18s%21s", "Personal Number", "First Name", "Last Name", "Address");
+        System.out.println();
+        System.out.println("--------------------------------------------------------------------------------------------");
 
         while (resultSet.next()){
-            System.out.println("Personal Number: " + resultSet.getInt(1) + "    First Name: " +
+            System.out.format("%16s%16s%20s%25s", resultSet.getInt(1), resultSet.getString(2),
+                    resultSet.getString(3), resultSet.getString(4));
+            System.out.println();
+
+            /*System.out.println("Personal Number: " + resultSet.getInt(1) + "    First Name: " +
                     resultSet.getString(2) + "    Last Name: " +
                     resultSet.getString(3) + "    Address: " +
-                    resultSet.getString(4));
+                    resultSet.getString(4));*/
         }
+        System.out.println("--------------------------------------------------------------------------------------------");
     }
 
     public static void getEmployees() throws SQLException {
         resultSet = stmnt.executeQuery("select * from employee");
         System.out.println();
         System.out.println("EMPLOYEES");
+        System.out.println();
+
+        System.out.format("%16s%21s%16s%18s%18s", "ID", "First Name", "Last Name", "Title", "Shop ID");
+        System.out.println();
+        System.out.println("--------------------------------------------------------------------------------------------");
 
         while (resultSet.next()){
-            System.out.println("ID: " + resultSet.getInt(1) + "    First Name: " +
+            System.out.format("%16s%19s%19s%18s%14s", resultSet.getInt(1), resultSet.getString(2),
+                    resultSet.getString(3), resultSet.getString(4), resultSet.getString(5));
+            System.out.println();
+            /*System.out.println("ID: " + resultSet.getInt(1) + "    First Name: " +
                     resultSet.getString(2) + "    Last Name: " +
                     resultSet.getString(3) + "    Title: " +
                     resultSet.getString(4) + "    Shop ID: " +
-                    resultSet.getString(5));
+                    resultSet.getString(5));*/
         }
+        System.out.println("--------------------------------------------------------------------------------------------");
     }
 }
