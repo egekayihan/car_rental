@@ -10,7 +10,7 @@ public class MyCon {
     static ResultSet resultSet = null;
     static Scanner sc = new Scanner(System.in);
     static PreparedStatement preparedStatement;
-    static final int portAddress = 3306;
+    static final int portAddress = 3307;
     static int employeeShopID = 0;
     static ArrayList<Integer> availableCarsArr = new ArrayList<>();
 
@@ -77,17 +77,14 @@ public class MyCon {
         System.out.println();
         System.out.format("%17s%18s%26s", "Car Brand", "Car Model", "Number of Rents");
         System.out.println();
-        System.out.println("------------------------------------------------------------------");
+        printDashes(70);
 
         while (resultSet.next()){
             System.out.format("%15s%19s%21s", resultSet.getString(1), resultSet.getString(2),
                     resultSet.getString(3));
             System.out.println();
-//            System.out.println("Car Brand: " + resultSet.getString(1)
-//                    + "    Car Model: " + resultSet.getString(2)
-//                    + "    Number of Rents: " + resultSet.getInt(3));
         }
-        System.out.println("------------------------------------------------------------------");
+        printDashes(70);
     }
 
     public static void getEmployeesPerformance() throws SQLException {
@@ -108,18 +105,14 @@ public class MyCon {
         System.out.println();
         System.out.format("%15s%16s%30s%21s",  "First Name", "Last Name","Number of Cars Rented", "Total Earning");
         System.out.println();
-        System.out.println("--------------------------------------------------------------------------------------------");
+        printDashes(90);
 
         while (resultSet.next()){
             System.out.format("%12s%20s%18s%27s", resultSet.getString(1), resultSet.getString(2),
                     resultSet.getString(3), resultSet.getString(4));
             System.out.println();
-//            System.out.println("First Name: " + resultSet.getString(1)
-//                    + "    Last Name: " + resultSet.getString(2)
-//                    + "    Number of Cars Rented: " + resultSet.getString(3)
-//                    + "    Total Earning: " + resultSet.getString(4));
         }
-        System.out.println("--------------------------------------------------------------------------------------------");
+        printDashes(90);
     }
 
     public static void employeeLogin() throws SQLException {
@@ -155,12 +148,12 @@ public class MyCon {
         resultSet = preparedStatement.executeQuery();
         System.out.println();
         System.out.println("   Available Car IDs");
-        System.out.println("--------------------------");
+        printDashes(25);
 
         while (resultSet.next()){
-            System.out.println("             " + resultSet.getInt(1));
+            System.out.println("          " + resultSet.getInt(1));
         }
-        System.out.println("--------------------------");
+        printDashes(25);
     }
 
     public static void getCarsInShop() throws SQLException {
@@ -194,7 +187,6 @@ public class MyCon {
             query2 +=  ",?";
 
         query2 = query2.replaceFirst(",\\?", "?") + ")";
-        System.out.println(query2);
 
         preparedStatement = connection.prepareStatement(query2);
         preparedStatement.setInt(1, employeeShopID);
@@ -206,18 +198,14 @@ public class MyCon {
         System.out.println();
         System.out.format("%15s%18s%21s%17s", "Car Brand", "Car Model", "Production Year", "Fee");
         System.out.println();
-        System.out.println("-----------------------------------------------------------------------------");
+        printDashes(80);
 
         while (resultSet.next()){
             System.out.format("%16s%16s%20s%19s", resultSet.getString(1), resultSet.getString(2),
                     resultSet.getString(3), resultSet.getString(4));
             System.out.println();
-//            System.out.println("Car Brand: " + resultSet.getString(1) + "    Car Model: " +
-//                    resultSet.getString(2) + "    Production Year: " +
-//                    resultSet.getString(3) + "    Fee: " +
-//                    resultSet.getString(4));
         }
-        System.out.println("-----------------------------------------------------------------------------");
+        printDashes(80);
     }
 
     public static void getPrevInvoices() throws SQLException {
@@ -237,21 +225,15 @@ public class MyCon {
         System.out.println();
         System.out.format("%15s%16s%20s%20s%20s%22s", "First Name", "Last Name", "Car Brand", "Car Model", "Starting Date", "Ending Date");
         System.out.println();
-        System.out.println("---------------------------------------------------------------------------------------------------------------------");
+        printDashes(120);
 
         while (resultSet.next()){
             System.out.format("%14s%17s%18s%21s%20s%23s", resultSet.getString(1), resultSet.getString(2),
                     resultSet.getString(3), resultSet.getString(4), resultSet.getDate(5),
                     resultSet.getDate(6));
             System.out.println();
-//            System.out.println("First Name: " + resultSet.getString(1) + "    Last Name: " +
-//                    resultSet.getString(2) + "    Car Brand: " +
-//                    resultSet.getString(3) + "    Car Model: " +
-//                    resultSet.getString(4) + "    Starting Date: " +
-//                    resultSet.getDate(5) + "    Ending Date: " +
-//                    resultSet.getDate(6));
         }
-        System.out.println("---------------------------------------------------------------------------------------------------------------------");
+        printDashes(120);
     }
 
     public static void getInserts() throws SQLException {
@@ -419,6 +401,7 @@ public class MyCon {
             }else if (input == 0) {
                 return;
             }
+            String s = sc.next();
         }
     }
 
@@ -451,16 +434,13 @@ public class MyCon {
         System.out.println();
         System.out.format("%15s%18s%24s", "ID", "City", "Address");
         System.out.println();
-        System.out.println("------------------------------------------------------------------");
+        printDashes(65);
         while (resultSet.next()){
             System.out.format("%15s%18s%25s", resultSet.getInt(1), resultSet.getString(2),
                     resultSet.getString(3));
             System.out.println();
-            /*System.out.println("ID: " + resultSet.getInt(1) + "    City: " +
-                    resultSet.getString(2) + "    Address: " +
-                    resultSet.getString(3));*/
         }
-        System.out.println("------------------------------------------------------------------");
+        printDashes(65);
     }
 
     public static void getCars() throws SQLException {
@@ -470,21 +450,15 @@ public class MyCon {
         System.out.println();
         System.out.format("%15s%16s%20s%22s%18s%21s", "ID", "Brand", "Model", "Production Year", "Fee", "Shop ID");
         System.out.println();
-        System.out.println("------------------------------------------------------------------------------------------------------------------");
+        printDashes(125);
 
         while (resultSet.next()){
             System.out.format("%15s%18s%18s%20s%20s%19s", resultSet.getInt(1), resultSet.getString(2),
                     resultSet.getString(3), resultSet.getString(4), resultSet.getString(5),
                     resultSet.getString(6));
             System.out.println();
-            /*System.out.println("ID: " + resultSet.getInt(1) + "    Brand: " +
-                    resultSet.getString(2) + "    Model: " +
-                    resultSet.getString(3) + "    Production year: " +
-                    resultSet.getString(4) + "    Fee: " +
-                    resultSet.getString(5) + "    Shop ID: " +
-                    resultSet.getString(6));*/
         }
-        System.out.println("------------------------------------------------------------------------------------------------------------------");
+        printDashes(125);
     }
 
     public static void getInvoices() throws SQLException {
@@ -496,24 +470,15 @@ public class MyCon {
         System.out.format("%15s%16s%18s%10s%28s%16s%16s", "ID", "Starting Date", "Ending Date", "Cost", "Client Personal Number",
                 "Employee ID", "Car ID");
         System.out.println();
-        System.out.println("---------------------------------------------------------------------------------------------------------------" +
-                "--------------------");
+        printDashes(130);
 
         while (resultSet.next()){
             System.out.format("%15s%16s%18s%10s%20s%19s%18s", resultSet.getInt(1), resultSet.getString(2),
                     resultSet.getString(3), resultSet.getString(4), resultSet.getString(5),
                     resultSet.getString(6), resultSet.getString(7));
             System.out.println();
-            /*System.out.println("ID: " + resultSet.getInt(1) + "    Starting Date:  " +
-                    resultSet.getString(2) + "    Ending Date: " +
-                    resultSet.getString(3) + "    Cost: " +
-                    resultSet.getString(4) + "    Client Personal Number: " +
-                    resultSet.getString(5) + "    Employee ID: " +
-                    resultSet.getString(6) + "    Car ID: " +
-                    resultSet.getString(7));*/
         }
-        System.out.println("---------------------------------------------------------------------------------------------------------------" +
-                "--------------------");
+        printDashes(130);
     }
 
     public static void getClients() throws SQLException {
@@ -524,19 +489,14 @@ public class MyCon {
 
         System.out.format("%20s%16s%18s%21s", "Personal Number", "First Name", "Last Name", "Address");
         System.out.println();
-        System.out.println("--------------------------------------------------------------------------------------------");
+        printDashes(90);
 
         while (resultSet.next()){
             System.out.format("%16s%16s%20s%25s", resultSet.getInt(1), resultSet.getString(2),
                     resultSet.getString(3), resultSet.getString(4));
             System.out.println();
-
-            /*System.out.println("Personal Number: " + resultSet.getInt(1) + "    First Name: " +
-                    resultSet.getString(2) + "    Last Name: " +
-                    resultSet.getString(3) + "    Address: " +
-                    resultSet.getString(4));*/
         }
-        System.out.println("--------------------------------------------------------------------------------------------");
+        printDashes(90);
     }
 
     public static void getEmployees() throws SQLException {
@@ -547,19 +507,14 @@ public class MyCon {
 
         System.out.format("%16s%21s%16s%18s%18s", "ID", "First Name", "Last Name", "Title", "Shop ID");
         System.out.println();
-        System.out.println("--------------------------------------------------------------------------------------------");
+        printDashes(95);
 
         while (resultSet.next()){
             System.out.format("%16s%19s%19s%18s%14s", resultSet.getInt(1), resultSet.getString(2),
                     resultSet.getString(3), resultSet.getString(4), resultSet.getString(5));
             System.out.println();
-            /*System.out.println("ID: " + resultSet.getInt(1) + "    First Name: " +
-                    resultSet.getString(2) + "    Last Name: " +
-                    resultSet.getString(3) + "    Title: " +
-                    resultSet.getString(4) + "    Shop ID: " +
-                    resultSet.getString(5));*/
         }
-        System.out.println("--------------------------------------------------------------------------------------------");
+        printDashes(95);
     }
 
     static void printDashes(int amount){
