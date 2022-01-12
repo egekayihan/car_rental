@@ -60,16 +60,6 @@ public class MyCon {
             manager = sc.nextInt();
         }
 
-        String query = "SELECT shop_id FROM employee WHERE id = ?";
-
-        preparedStatement = connection.prepareStatement(query);
-        preparedStatement.setInt(1, arr.get(manager - 1));
-        resultSet = preparedStatement.executeQuery();
-
-        if (resultSet.next()){
-            shopID = resultSet.getInt(1);
-        }
-
         String query2 = "SELECT COUNT(invoice_id), SUM(cost) " +
                 "FROM renting_history " +
                 "WHERE NOT invoice_id IS NULL AND  shop_id = (SELECT shop_id FROM employee WHERE id = ?) " +
@@ -432,10 +422,15 @@ public class MyCon {
                 System.out.println();
             }else if (input == 0) {
                 return;
+            }else{
+                System.out.println("Wrong Input");
+                System.out.println();
             }
-            System.out.println("Press enter to return back to menu");
-            sc.nextLine();
-            sc.hasNextLine();
+            if (input >= 0 && input <= 10) {
+                System.out.println("Press enter to return back to menu");
+                sc.nextLine();
+                sc.hasNextLine();
+            }
         }
     }
 
