@@ -37,6 +37,45 @@ public class MyCon {
         }
     }
 
+    public static void getSalesInAShopbyManager() throws SQLException {
+        System.out.print("Manager ID: ");
+        int managerID = sc.nextInt();
+
+        resultSet = stmnt.executeQuery("SELECT id, firstname, lastname FROM `employee` WHERE title = \"manager\"");
+        System.out.println();
+        printDashes(95);
+
+        for ()
+
+        while (resultSet.next()){
+            System.out.format("%16s%19s%19s", resultSet.getInt(1), resultSet.getString(2),
+                    resultSet.getString(3));
+            System.out.println();
+        }
+        printDashes(95);
+
+        String query2 = "SELECT shop_id, COUNT(id), SUM(cost) " +
+                "FROM renting_history " +
+                "WHERE NOT invoice_id IS NULL AND  shop_id = (SELECT shop_id FROM employee WHERE id = ?) " +
+                "GROUP BY shop_id";
+
+        preparedStatement = connection.prepareStatement(query2);
+        preparedStatement.setInt(1, shopID);
+
+        resultSet = preparedStatement.executeQuery();
+        System.out.println();
+        System.out.format("%15s%16s%30s%21s",  "First Name", "Last Name","Number of Cars Rented", "Total Earning");
+        System.out.println();
+        printDashes(90);
+
+        while (resultSet.next()){
+            System.out.format("%12s%20s%18s%27s", resultSet.getString(1), resultSet.getString(2),
+                    resultSet.getString(3), resultSet.getString(4));
+            System.out.println();
+        }
+        printDashes(90);
+    }
+
     public static void getCarsPerformanceInACity() throws SQLException {
         int i = 1;
         String city = "";
