@@ -11,7 +11,6 @@ public class MyCon {
     static Scanner sc = new Scanner(System.in);
     static PreparedStatement preparedStatement;
     static final int portAddress = 3306;
-    static ArrayList<Integer> availableCarsArr = new ArrayList<>();
     static int employeeShopID = 0;
     static int employeeID;
 
@@ -130,7 +129,7 @@ public class MyCon {
             employeeShopID = resultSet.getInt(1);
     }
 
-    public static void getAvailableCars() throws SQLException {
+    public static ArrayList<Integer> getUnavailableCars() throws SQLException {
         System.out.print("Starting Date (YYYY-MM-DD): ");
         String startDateS = sc.next();
         Date startDateD = Date.valueOf(startDateS);
@@ -151,40 +150,21 @@ public class MyCon {
         System.out.println("   Available Car IDs");
         printDashes(25);
 
+        ArrayList<Integer> notAvailableCars = new ArrayList<>();
+
         while (resultSet.next()){
-            System.out.println("          " + resultSet.getInt(1));
+            notAvailableCars.add(resultSet.getInt(1));
         }
-        printDashes(25);
+        return notAvailableCars;
     }
 
     public static void getCarsInShop() throws SQLException {
-        availableCarsArr = new ArrayList<Integer>();
-        System.out.print("Starting Date (YYYY-MM-DD): ");
-        String startDateS = sc.next();
-        Date startDateD = Date.valueOf(startDateS);
-
-        System.out.print("Ending Date (YYYY-MM-DD): ");
-        String endDateS = sc.next();
-        Date endDateD = Date.valueOf(endDateS);
-
-//        TODO get rid of the duplicate in this and previous methods
-        String query = "SELECT invoice.car_id FROM invoice " +
-                "WHERE NOT(ending_date < ? OR starting_date > ?) ";
-
-        preparedStatement = connection.prepareStatement(query);
-        preparedStatement.setDate(1, startDateD);
-        preparedStatement.setDate(2, endDateD);
-
-        resultSet = preparedStatement.executeQuery();
-
-        while (resultSet.next())
-            availableCarsArr.add(resultSet.getInt(1));
-
+        ArrayList<Integer> unavailableCars = getUnavailableCars();
 
         String query2 = "SELECT brand, model, production_year, fee FROM car " +
                 "WHERE shop_id = ? AND car.id NOT IN(";
 
-        for(int i = 0; i < availableCarsArr.size(); i++)
+        for(int i = 0; i < unavailableCars.size(); i++)
             query2 +=  ",?";
 
         query2 = query2.replaceFirst(",\\?", "?") + ")";
@@ -192,8 +172,8 @@ public class MyCon {
         preparedStatement = connection.prepareStatement(query2);
         preparedStatement.setInt(1, employeeShopID);
 
-        for(int i = 0; i < availableCarsArr.size(); i++)
-            preparedStatement.setInt(i + 2, availableCarsArr.get(i));
+        for(int i = 0; i < unavailableCars.size(); i++)
+            preparedStatement.setInt(i + 2, unavailableCars.get(i));
 
         resultSet = preparedStatement.executeQuery();
         System.out.println();
@@ -351,17 +331,16 @@ public class MyCon {
     public static void getTables() throws SQLException {
         int input = 0;
         while (true) {
-            System.out.println();
+            printDashes(50);
             System.out.println("1. Shops");
             System.out.println("2. Cars");
             System.out.println("3. Clients");
             System.out.println("4. Employees");
             System.out.println("5. Invoices");
             System.out.println("6. Get Previous Invoices of a Person");
-            System.out.println("7. Get Available Cars in a Certain Period");
-            System.out.println("8. Get Available Cars in a Certain Shop");
-            System.out.println("9. Get Employee Performances in a Shop");
-            System.out.println("10. Get Cars Performance in a City");
+            System.out.println("7. Get Available Cars in a Certain Shop");
+            System.out.println("8. Get Employee Performances in a Shop");
+            System.out.println("9. Get Renting Performance of each Car in a City");
             System.out.print("Which table would you like to view (0. Exit): ");
             input = sc.nextInt();
 
@@ -383,16 +362,13 @@ public class MyCon {
             } else if (input == 6) {
                 getPrevInvoices();
                 System.out.println();
-            }else if (input == 7) {
-                getAvailableCars();
-                System.out.println();
-            }else if (input == 8) {
+            } else if (input == 7) {
                 getCarsInShop();
                 System.out.println();
-            }else if (input == 9) {
+            }else if (input == 8) {
                 getEmployeesPerformance();
                 System.out.println();
-            }else if (input == 10) {
+            }else if (input == 9) {
                 getCarsPerformanceInACity();
                 System.out.println();
             }else if (input == 0) {
