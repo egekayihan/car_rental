@@ -10,9 +10,10 @@ public class MyCon {
     static ResultSet resultSet = null;
     static Scanner sc = new Scanner(System.in);
     static PreparedStatement preparedStatement;
-    static final int portAddress = 3307;
-    static int employeeShopID = 0;
+    static final int portAddress = 3306;
     static ArrayList<Integer> availableCarsArr = new ArrayList<>();
+    static int employeeShopID = 0;
+    static int employeeID;
 
     public static void main(String[] args) throws SQLException {
         int input;
@@ -20,7 +21,7 @@ public class MyCon {
         employeeLogin();
 
         while (true) {
-            System.out.println("------------------------------------------------------");
+            printDashes(50);
             System.out.println("1. Insert");
             System.out.println("2. View");
             System.out.print("Which function would you like to run (0. Exit): ");
@@ -37,7 +38,7 @@ public class MyCon {
         }
     }
 
-    public static void getCarsInACity() throws SQLException {
+    public static void getCarsPerformanceInACity() throws SQLException {
         int i = 1;
         String city = "";
         int input = 0;
@@ -117,11 +118,11 @@ public class MyCon {
 
     public static void employeeLogin() throws SQLException {
         System.out.print("Employee ID: ");
-        int id = sc.nextInt();
+        employeeID = sc.nextInt();
 
         String query = "select shop_id from employee where employee.id = ?";
         preparedStatement = connection.prepareStatement(query);
-        preparedStatement.setInt(1, id);
+        preparedStatement.setInt(1, employeeID);
 
         resultSet = preparedStatement.executeQuery();
 
@@ -202,7 +203,7 @@ public class MyCon {
 
         while (resultSet.next()){
             System.out.format("%16s%16s%20s%19s", resultSet.getString(1), resultSet.getString(2),
-                    resultSet.getString(3), resultSet.getString(4));
+                    resultSet.getString(3).substring(0,4), resultSet.getString(4));
             System.out.println();
         }
         printDashes(80);
@@ -239,7 +240,7 @@ public class MyCon {
     public static void getInserts() throws SQLException {
         int input = 0;
         while (true) {
-            System.out.println("------------------------------------------------------");
+            printDashes(50);
             System.out.println("1. Client");
             System.out.println("2. Invoices");
             System.out.print("Which table would you like to insert (0. Exit): ");
@@ -302,9 +303,6 @@ public class MyCon {
         System.out.print("Client Personal Number: ");
         int clPersNum = sc.nextInt();
 
-        System.out.print("Employee ID: ");
-        int emId = sc.nextInt();
-
         System.out.print("Car ID: ");
         int caId = sc.nextInt();
 
@@ -317,7 +315,7 @@ public class MyCon {
         preparedStatement.setDate(2, endDateD);
         preparedStatement.setInt(3, cost);
         preparedStatement.setInt(4, clPersNum);
-        preparedStatement.setInt(5, emId);
+        preparedStatement.setInt(5, employeeID);
         preparedStatement.setInt(6, caId);
 
         preparedStatement.execute();
@@ -359,12 +357,11 @@ public class MyCon {
             System.out.println("3. Clients");
             System.out.println("4. Employees");
             System.out.println("5. Invoices");
-            System.out.println();
             System.out.println("6. Get Previous Invoices of a Person");
             System.out.println("7. Get Available Cars in a Certain Period");
             System.out.println("8. Get Available Cars in a Certain Shop");
             System.out.println("9. Get Employee Performances in a Shop");
-            System.out.println("10. Get Cars in a City");
+            System.out.println("10. Get Cars Performance in a City");
             System.out.print("Which table would you like to view (0. Exit): ");
             input = sc.nextInt();
 
@@ -396,12 +393,14 @@ public class MyCon {
                 getEmployeesPerformance();
                 System.out.println();
             }else if (input == 10) {
-                getCarsInACity();
+                getCarsPerformanceInACity();
                 System.out.println();
             }else if (input == 0) {
                 return;
             }
-            String s = sc.next();
+            System.out.println("Press enter to return back to menu");
+            sc.nextLine();
+            sc.hasNextLine();
         }
     }
 
@@ -454,7 +453,7 @@ public class MyCon {
 
         while (resultSet.next()){
             System.out.format("%15s%18s%18s%20s%20s%19s", resultSet.getInt(1), resultSet.getString(2),
-                    resultSet.getString(3), resultSet.getString(4), resultSet.getString(5),
+                    resultSet.getString(3), resultSet.getString(4).substring(0,4), resultSet.getString(5),
                     resultSet.getString(6));
             System.out.println();
         }
