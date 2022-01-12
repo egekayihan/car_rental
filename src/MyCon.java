@@ -1,3 +1,4 @@
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -9,12 +10,12 @@ public class MyCon {
     static ResultSet resultSet = null;
     static Scanner sc = new Scanner(System.in);
     static PreparedStatement preparedStatement;
-    static final int portAddress = 3307;
+    static final int portAddress = 3306;
     static int employeeShopID = 0;
-    static ArrayList<Integer> availableCarsArr = new ArrayList<Integer>();
+    static ArrayList<Integer> availableCarsArr = new ArrayList<>();
 
     public static void main(String[] args) throws SQLException {
-        int input = 0;
+        int input;
 
         employeeLogin();
 
@@ -34,14 +35,13 @@ public class MyCon {
                 break;
             }
         }
-
     }
 
     public static void getCarsInACity() throws SQLException {
         int i = 1;
         String city = "";
         int input = 0;
-        ArrayList<String> arr = new ArrayList<String>();
+        ArrayList<String> arr = new ArrayList<>();
         resultSet = stmnt.executeQuery("select city from shop");
 
         while (resultSet.next()){
@@ -173,6 +173,7 @@ public class MyCon {
         String endDateS = sc.next();
         Date endDateD = Date.valueOf(endDateS);
 
+//        TODO get rid of the duplicate in this and previous methods
         String query = "SELECT invoice.car_id FROM invoice " +
                 "WHERE NOT(ending_date < ? OR starting_date > ?) ";
 
@@ -187,10 +188,13 @@ public class MyCon {
 
 
         String query2 = "SELECT brand, model, production_year, fee FROM car " +
-                "WHERE shop_id = ?";
+                "WHERE shop_id = ? AND car.id NOT IN(";
 
         for(int i = 0; i < availableCarsArr.size(); i++)
-            query2 = query2 + " AND id != ?";
+            query2 +=  ",?";
+
+        query2 = query2.replaceFirst(",\\?", "?") + ")";
+        System.out.println(query2);
 
         preparedStatement = connection.prepareStatement(query2);
         preparedStatement.setInt(1, employeeShopID);
@@ -448,7 +452,6 @@ public class MyCon {
         System.out.format("%15s%18s%24s", "ID", "City", "Address");
         System.out.println();
         System.out.println("------------------------------------------------------------------");
-
         while (resultSet.next()){
             System.out.format("%15s%18s%25s", resultSet.getInt(1), resultSet.getString(2),
                     resultSet.getString(3));
@@ -557,5 +560,11 @@ public class MyCon {
                     resultSet.getString(5));*/
         }
         System.out.println("--------------------------------------------------------------------------------------------");
+    }
+
+    static void printDashes(int amount){
+        for (int i = 0; i < amount; i++)
+            System.out.print("—");
+        System.out.println();
     }
 }
