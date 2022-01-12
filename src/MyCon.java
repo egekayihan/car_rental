@@ -10,7 +10,7 @@ public class MyCon {
     static ResultSet resultSet = null;
     static Scanner sc = new Scanner(System.in);
     static PreparedStatement preparedStatement;
-    static final int portAddress = 3306;
+    static final int portAddress = 3307;
     static int employeeShopID = 0;
     static int employeeID;
 
@@ -38,42 +38,58 @@ public class MyCon {
     }
 
     public static void getSalesInAShopbyManager() throws SQLException {
-        System.out.print("Manager ID: ");
-        int managerID = sc.nextInt();
+        int i = 1;
+        ArrayList<Integer> arr = new ArrayList<Integer>();
+        int shopID = 0;
+
 
         resultSet = stmnt.executeQuery("SELECT id, firstname, lastname FROM `employee` WHERE title = \"manager\"");
         System.out.println();
-        printDashes(95);
-
-        for ()
 
         while (resultSet.next()){
-            System.out.format("%16s%19s%19s", resultSet.getInt(1), resultSet.getString(2),
-                    resultSet.getString(3));
-            System.out.println();
+            System.out.println(i + ": " + resultSet.getString(2) + " " + resultSet.getString(3));
+            arr.add(resultSet.getInt(1));
+            i++;
         }
-        printDashes(95);
 
-        String query2 = "SELECT shop_id, COUNT(id), SUM(cost) " +
+        System.out.print("Select a manager: ");
+        int manager = sc.nextInt();
+
+        while (manager <= 0 && manager > i) {
+            System.out.print("Select a manager: ");
+            manager = sc.nextInt();
+        }
+
+        String query = "SELECT shop_id FROM employee WHERE id = ?";
+
+        preparedStatement = connection.prepareStatement(query);
+        preparedStatement.setInt(1, arr.get(manager - 1));
+        resultSet = preparedStatement.executeQuery();
+
+        if (resultSet.next()){
+            shopID = resultSet.getInt(1);
+        }
+
+        String query2 = "SELECT COUNT(invoice_id), SUM(cost) " +
                 "FROM renting_history " +
                 "WHERE NOT invoice_id IS NULL AND  shop_id = (SELECT shop_id FROM employee WHERE id = ?) " +
                 "GROUP BY shop_id";
 
         preparedStatement = connection.prepareStatement(query2);
-        preparedStatement.setInt(1, shopID);
+        preparedStatement.setInt(1, arr.get(manager - 1));
 
         resultSet = preparedStatement.executeQuery();
+
         System.out.println();
-        System.out.format("%15s%16s%30s%21s",  "First Name", "Last Name","Number of Cars Rented", "Total Earning");
+        System.out.format("%15s%21s",  "Number of Cars Rented", "Total Earning");
         System.out.println();
-        printDashes(90);
+        printDashes(50);
 
         while (resultSet.next()){
-            System.out.format("%12s%20s%18s%27s", resultSet.getString(1), resultSet.getString(2),
-                    resultSet.getString(3), resultSet.getString(4));
+            System.out.format("%12s%25s", resultSet.getString(1), resultSet.getString(2));
             System.out.println();
         }
-        printDashes(90);
+        printDashes(50);
     }
 
     public static void getCarsPerformanceInACity() throws SQLException {
@@ -380,6 +396,7 @@ public class MyCon {
             System.out.println("7. Get Available Cars in a Certain Shop");
             System.out.println("8. Get Employee Performances in a Shop");
             System.out.println("9. Get Renting Performance of each Car in a City");
+            System.out.println("10. Get Rents Under Certain Manager");
             System.out.print("Which table would you like to view (0. Exit): ");
             input = sc.nextInt();
 
@@ -409,6 +426,9 @@ public class MyCon {
                 System.out.println();
             }else if (input == 9) {
                 getCarsPerformanceInACity();
+                System.out.println();
+            }else if (input == 10) {
+                getSalesInAShopbyManager();
                 System.out.println();
             }else if (input == 0) {
                 return;
